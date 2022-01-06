@@ -87,7 +87,7 @@ configure_nvidia_installation_dirs() {
 
   # EDIT FOR SPECIFIC SERVER
   # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
-  mount -t overlay -o lowerdir=/var/lib/docker/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
+  mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /var/lib/docker/bin
   export PATH=/var/lib/docker/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 
   # nvidia-installer does not provide an option to configure the
