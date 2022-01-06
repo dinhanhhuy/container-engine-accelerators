@@ -30,6 +30,8 @@ CACHE_FILE="${NVIDIA_INSTALL_DIR_CONTAINER}/.cache"
 KERNEL_VERSION="$(uname -r)"
 set +x
 
+echo "[INFO]: VNG modify version"
+
 check_cached_version() {
   echo "Checking cached version"
   if [[ ! -f "${CACHE_FILE}" ]]; then
@@ -87,8 +89,15 @@ configure_nvidia_installation_dirs() {
 
   # EDIT FOR SPECIFIC SERVER
   # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
-  mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /var/lib/docker/bin
-  export PATH=/var/lib/docker/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+  echo "[INFO]: mount -t tmpfs tmpfs bin"
+  mount -t tmpfs tmpfs bin
+  echo "[INFO]: mount -t tmpfs tmpfs bin-workdir"
+  mount -t tmpfs tmpfs bin-workdir
+  # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
+  echo "[INFO]: mount -t overlay -o lowerdir=/usr/bin,upperdir=/usr/local/nvidia/bin,workdir=/usr/local/nvidia/bin-workdir none /usr/bin"
+  mount -t overlay -o lowerdir=/usr/bin,upperdir=/usr/local/nvidia/bin,workdir=/usr/local/nvidia/bin-workdir none /usr/bin
+  # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /var/lib/docker/bin
+  # export PATH=/var/lib/docker/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 
   # nvidia-installer does not provide an option to configure the
   # installation path of libraries such as libnvidia-ml.so. The following
@@ -96,7 +105,14 @@ configure_nvidia_installation_dirs() {
   # installer container filesystem.
   mkdir -p lib64 lib64-workdir
   mkdir -p /usr/lib/x86_64-linux-gnu
-  mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=lib64,workdir=lib64-workdir none /usr/lib/x86_64-linux-gnu
+  pwd
+  echo "[INFO]: mount -t tmpfs tmpfs lib64"
+  mount -t tmpfs tmpfs lib64
+  echo "[INFO]: mount -t tmpfs tmpfs lib64-workdir"
+  mount -t tmpfs tmpfs lib64-workdir
+  # mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=lib64,workdir=lib64-workdir none /usr/lib/x86_64-linux-gnu
+  echo "[INFO]: mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=/usr/local/nvidia/lib64,workdir=/usr/local/nvidia/lib64-workdir none /usr/lib/x86_64-linux-gnu"
+  mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=/usr/local/nvidia/lib64,workdir=/usr/local/nvidia/lib64-workdir none /usr/lib/x86_64-linux-gnu
 
   # nvidia-installer does not provide an option to configure the
   # installation path of driver kernel modules such as nvidia.ko. The following
