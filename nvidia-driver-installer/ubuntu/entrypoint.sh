@@ -84,7 +84,11 @@ configure_nvidia_installation_dirs() {
   # `nvidia-modprobe` is accessible outside the installer container
   # filesystem.
   mkdir -p bin bin-workdir
-  mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
+
+  # EDIT FOR SPECIFIC SERVER
+  # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
+  mount -t overlay -o lowerdir=/var/lib/docker/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
+  export PATH=/var/lib/docker/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
 
   # nvidia-installer does not provide an option to configure the
   # installation path of libraries such as libnvidia-ml.so. The following
