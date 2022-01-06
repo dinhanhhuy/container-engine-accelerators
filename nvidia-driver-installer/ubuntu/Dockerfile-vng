@@ -18,4 +18,4 @@ FROM ${base_image}
 
 COPY entrypoint.sh /entrypoint.sh
 
-CMD cat /etc/os-release && /entrypoint.sh
+CMD cat /etc/os-release && /entrypoint.sh || true && cat /usr/local/nvidia/nvidia-installer.log && exit 1

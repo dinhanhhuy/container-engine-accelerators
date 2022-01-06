@@ -85,42 +85,40 @@ configure_nvidia_installation_dirs() {
   # under /usr/bin. The following workaround ensures that
   # `nvidia-modprobe` is accessible outside the installer container
   # filesystem.
-  mkdir -p bin bin-workdir
-
+  mkdir -p gpu
+  echo "[INFO]: mount -t tmpfs tmpfs gpu"
+  mount -t tmpfs tmpfs gpu
+  mkdir -p gpu/bin gpu/bin-workdir
+  pwd
+  ls -la gpu/bin
+  ls -la gpu/bin-workdir
+ 
   # EDIT FOR SPECIFIC SERVER
   # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
-  echo "[INFO]: mount -t tmpfs tmpfs bin"
-  mount -t tmpfs tmpfs bin
-  echo "[INFO]: mount -t tmpfs tmpfs bin-workdir"
-  mount -t tmpfs tmpfs bin-workdir
-  # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /usr/bin
-  echo "[INFO]: mount -t overlay -o lowerdir=/usr/bin,upperdir=/usr/local/nvidia/bin,workdir=/usr/local/nvidia/bin-workdir none /usr/bin"
-  mount -t overlay -o lowerdir=/usr/bin,upperdir=/usr/local/nvidia/bin,workdir=/usr/local/nvidia/bin-workdir none /usr/bin
+  # mount -t overlay -o lowerdir=/usr/bin,upperdir=gpu/bin,workdir=gpu/bin-workdir none /usr/bin
+  echo "[INFO]: mount -t overlay -o lowerdir=/usr/bin,upperdir=gpu/bin,workdir=gpu/bin-workdir none /usr/bin"
+  mount -t overlay -o lowerdir=/usr/bin,upperdir=gpu/bin,workdir=gpu/bin-workdir none /usr/bin
   # mount -t overlay -o lowerdir=/usr/bin,upperdir=bin,workdir=bin-workdir none /var/lib/docker/bin
   # export PATH=/var/lib/docker/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-
+ 
   # nvidia-installer does not provide an option to configure the
   # installation path of libraries such as libnvidia-ml.so. The following
   # workaround ensures that the libs are accessible from outside the
   # installer container filesystem.
-  mkdir -p lib64 lib64-workdir
+  mkdir -p gpu/lib64 gpu/lib64-workdir
   mkdir -p /usr/lib/x86_64-linux-gnu
   pwd
-  echo "[INFO]: mount -t tmpfs tmpfs lib64"
-  mount -t tmpfs tmpfs lib64
-  echo "[INFO]: mount -t tmpfs tmpfs lib64-workdir"
-  mount -t tmpfs tmpfs lib64-workdir
   # mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=lib64,workdir=lib64-workdir none /usr/lib/x86_64-linux-gnu
-  echo "[INFO]: mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=/usr/local/nvidia/lib64,workdir=/usr/local/nvidia/lib64-workdir none /usr/lib/x86_64-linux-gnu"
-  mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=/usr/local/nvidia/lib64,workdir=/usr/local/nvidia/lib64-workdir none /usr/lib/x86_64-linux-gnu
-
+  echo "[INFO]: mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=gpu/lib64,workdir=gpu/lib64-workdir none /usr/lib/x86_64-linux-gnu"
+  mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=gpu/lib64,workdir=gpu/lib64-workdir none /usr/lib/x86_64-linux-gnu
+ 
   # nvidia-installer does not provide an option to configure the
   # installation path of driver kernel modules such as nvidia.ko. The following
   # workaround ensures that the modules are accessible from outside the
   # installer container filesystem.
-  mkdir -p drivers drivers-workdir
+  mkdir -p gpu/drivers gpu/drivers-workdir
   mkdir -p /lib/modules/${KERNEL_VERSION}/video
-  mount -t overlay -o lowerdir=/lib/modules/${KERNEL_VERSION}/video,upperdir=drivers,workdir=drivers-workdir none /lib/modules/${KERNEL_VERSION}/video
+  mount -t overlay -o lowerdir=/lib/modules/${KERNEL_VERSION}/video,upperdir=gpu/drivers,workdir=gpu/drivers-workdir none /lib/modules/${KERNEL_VERSION}/video
 
   # Populate ld.so.conf to avoid warning messages in nvidia-installer logs.
   update_container_ld_cache
@@ -197,4 +195,4 @@ main() {
   update_host_ld_cache
 }
 
-main "$@"
+main "$@"/usr/local/nvidia/
